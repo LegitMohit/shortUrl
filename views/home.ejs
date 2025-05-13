@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-link"></i>
+            <span>URL Shortener</span>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="nav-link active"><i class="fas fa-home"></i> Home</a>
+            <!-- <a href="/analytics" class="nav-link"><i class="fas fa-chart-bar"></i> Analytics</a> -->
+            <a href="https://github.com/LegitMohit/" class="nav-link" target="_blank">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+        </div>
+        <button class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
+    </header>
+    <main>
+    <div class="container">
+        <h1>URL Shortener</h1>
+        <% if(locals.id){ %>
+            <h2>Your short URL is <a href="http://localhost:8001/<%= id %>"><%= id %></a></h2>
+        <% } %>
+        <div>
+            <form action="/url" method="POST">
+                <label for="url">Enter URL</label>
+                <div>
+                    <div>
+                        <input type="text" name="url" placeholder="https://example.com" required>
+                    </div>
+                    <button type="submit" class="genratBtn">Generate</button>
+                </div>
+            </form>
+        </div>
+        <div class="table-container">
+        <% if (locals.urls) { %>
+         <div class="table-wrapper">
+            <table text-align="center">
+                <thead> 
+                    <th>S.No</th>
+                    <th>ShortId</th>
+                    <th>Redirect URL</th>
+                    <th>Analytics</th>
+                </thead>
+                <tbody>
+                    <% locals.urls.forEach((url, index) => { %>
+                        <tr>
+                            <td><%= index + 1 %></td>
+                            <td><a href="http://localhost:8001/<%= url.shortId %>"><%= url.shortId %></a></td>
+                            <td><%= url.redirectURL %></td>
+                            <td><%= url.visithistory.length %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+         </div>
+        <% } %>
+        </div>
+    </div>
+    </main>
+    <script>
+        document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

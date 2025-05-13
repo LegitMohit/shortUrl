@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - URL Shortener</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>">
+    <link rel="stylesheet" href="/signup.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-link"></i>
+                <span>URL Shortener</span>
+            </div>
+            <div class="nav-links">
+                <a href="https://github.com/LegitMohit/" class="nav-link" target="_blank">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+    <main>
+        <div class="signup-container">
+            <h1>Sign Up</h1>
+            <% if(locals.error) { %>
+                <div class="error-message"><%= error %></div>
+            <% } %>
+            <form action="/user" method="post">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" placeholder="Create a password" required 
+                           pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                           title="Password must be at least 8 characters long and include uppercase, lowercase, number and special character">
+                    <div class="password-strength">
+                        <div class="strength-meter">
+                            <div class="strength-meter-fill" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="strength-text">Password strength: <span>Too weak</span></div>
+                    </div>
+                    <div class="password-requirements">
+                        <p>Password must contain:</p>
+                        <ul>
+                            <li class="requirement" data-requirement="length">At least 8 characters</li>
+                            <li class="requirement" data-requirement="lowercase">One lowercase letter</li>
+                            <li class="requirement" data-requirement="uppercase">One uppercase letter</li>
+                            <li class="requirement" data-requirement="number">One number</li>
+                            <li class="requirement" data-requirement="special">One special character</li>
+                        </ul>
+                    </div>
+                </div>
+                <button type="submit">Create Account</button>
+            </form>
+            <div class="login-link">
+                Already have an account? <a href="/login">Login</a>
+            </div>
+        </div>
+    </main>
+    <script>
+        document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+
+        // Password strength checker
+        const passwordInput = document.getElementById('password');
+        const passwordFormGroup = passwordInput.closest('.form-group');
+        const strengthMeter = document.querySelector('.strength-meter-fill');
+        const strengthText = document.querySelector('.strength-text span');
+        const requirements = document.querySelectorAll('.requirement');
+
+        const requirementsList = {
+            length: password => password.length >= 8,
+            lowercase: password => /[a-z]/.test(password),
+            uppercase: password => /[A-Z]/.test(password),
+            number: password => /[0-9]/.test(password),
+            special: password => /[^A-Za-z0-9]/.test(password)
+        };
+
+        function updateStrengthMeter(password) {
+            let strength = 0;
+            const totalRequirements = Object.keys(requirementsList).length;
+            
+            // Check each requirement
+            Object.entries(requirementsList).forEach(([requirement, validator]) => {
+                const requirementElement = document.querySelector(`[data-requirement="${requirement}"]`);
+                if (validator(password)) {
+                    strength++;
+                    requirementElement.classList.add('met');
+                } else {
+                    requirementElement.classList.remove('met');
+                }
+            });
+
+            // Update strength meter
+            const percentage = (strength / totalRequirements) * 100;
+            strengthMeter.style.width = `${percentage}%`;
+            
+            // Update strength text and color
+            if (percentage === 0) {
+                strengthText.textContent = 'Too weak';
+                strengthMeter.style.backgroundColor = '#e74c3c';
+            } else if (percentage <= 25) {
+                strengthText.textContent = 'Weak';
+                strengthMeter.style.backgroundColor = '#e74c3c';
+            } else if (percentage <= 50) {
+                strengthText.textContent = 'Fair';
+                strengthMeter.style.backgroundColor = '#f1c40f';
+            } else if (percentage <= 75) {
+                strengthText.textContent = 'Good';
+                strengthMeter.style.backgroundColor = '#2ecc71';
+            } else {
+                strengthText.textContent = 'Strong';
+                strengthMeter.style.backgroundColor = '#27ae60';
+            }
+        }
+
+        // Show password strength indicator on focus
+        passwordInput.addEventListener('focus', () => {
+            passwordFormGroup.classList.add('password-input-focused');
+            if (passwordInput.value) {
+                updateStrengthMeter(passwordInput.value);
+            }
+        });
+
+        // Hide password strength indicator on blur if password is empty
+        passwordInput.addEventListener('blur', () => {
+            if (!passwordInput.value) {
+                passwordFormGroup.classList.remove('password-input-focused');
+            }
+        });
+
+        // Update strength meter as user types
+        passwordInput.addEventListener('input', (e) => {
+            updateStrengthMeter(e.target.value);
+        });
+    </script>
+</body>
+</html>
