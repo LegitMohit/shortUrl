@@ -35,7 +35,7 @@
     <div class="container">
         <h1>URL Shortener</h1>
         <% if(locals.id){ %>
-            <h2>Your short URL is <a href="<%= process.env.PAGE %>/<%= id %>"><%= id %></a></h2>
+            <h2>Your short URL is <a href="<%= process.env.PAGE %><%= id %>"><%= id %></a></h2>
         <% } %>
         <div>
             <form action="/url" method="POST">
@@ -62,7 +62,7 @@
                     <% locals.urls.forEach((url, index) => { %>
                         <tr>
                             <td><%= index + 1 %></td>
-                            <td><a href= "<%= process.env.PAGE %>/<%= url.shortId %>"><%= url.shortId %></a></td>
+                            <td><a href= "<%= process.env.PAGE %><%= url.shortId %>"><%= url.shortId %></a></td>
                             <td><%= url.redirectURL %></td>
                             <td><%= url.visithistory.length %></td>
                         </tr>
